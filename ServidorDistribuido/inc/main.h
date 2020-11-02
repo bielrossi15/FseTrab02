@@ -17,7 +17,7 @@
 void * gpioLampadasArCondicionado();
 void * i2c_TemperaturaUmidade();
 void *gpioSensores();
-void trataSinal(int sinal);
+void trataSinalAlarme(int sinal);
 void interruption(int sig);
 
 #endif

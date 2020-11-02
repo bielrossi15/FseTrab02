@@ -16,7 +16,7 @@ int keepThreading = 1;
 
 int main()
 {
-    signal(SIGALRM, trataSinal);
+    signal(SIGALRM, trataSinalAlarme);
     signal(SIGINT, interruption);
     while(init_bcm());
     while(initI2C());
@@ -40,7 +40,7 @@ int main()
 
 
 
-void trataSinal(int sinal)
+void trataSinalAlarme(int sinal)
 {
     pthread_mutex_unlock(&lock1);
     if(contador==10){
