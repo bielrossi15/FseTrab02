@@ -43,7 +43,9 @@ void trataSinal(int signal){
 void trataInterrupcao(int sig)
 {
     keepThreading=0;
-    printf("%d\n",sig);
+    if(sig ==13){
+        printf("Ocorreu um erro com os sockets\n");
+    }
     ualarm(0,0);
     
     pthread_mutex_unlock(&lock1),

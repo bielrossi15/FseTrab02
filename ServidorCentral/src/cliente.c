@@ -28,7 +28,7 @@ void Cliente() {
 
 	// Connect
 	if(connect(clienteSocket, (struct sockaddr *) &servidorAddr, sizeof(servidorAddr)) < 0){
-		printf("Erro no connect()\n");
+		printf("Erro ao conectar com o Servidor Distribuido()\n");
 		return;
 	}
 
@@ -47,8 +47,15 @@ void Cliente() {
 		}
 		
 		tamanhoMensagem = strlen(comando);
-		if(send(clienteSocket, comando, tamanhoMensagem, 0) != tamanhoMensagem)
+		if(send(clienteSocket, comando, tamanhoMensagem, 0) != tamanhoMensagem){
 			printf("Erro no envio: numero de bytes enviados diferente do esperado\n");
+			break;
+		}
+		char buffer[20];
+		if(recv(clienteSocket,buffer, 16-1, 0) <= 0){
+			printf("Erro ao receber dados. Verifique se o o lado servidor do ServidorDistribuido se encontra ligado\n");
+			break;
+		}
 
 		printf("Escolha um comando de 0 a 6. 0 a 3 sendo as lâmpadas, 4 e 5 ar-condicionados\ne 6 caso deseje acionar os 2 ar-condicionados\n");
 
