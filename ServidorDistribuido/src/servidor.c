@@ -14,7 +14,12 @@ void TrataClienteTCP() {
 			printf("Erro no recv()\n");
 			continue;
 		}
-		
+		if(send(socketCliente, buffer, tamanhoRecebido, 0) != tamanhoRecebido)
+		{
+			printf("Erro no envio - send()\n");
+			return;
+
+		}	
         buffer[tamanhoRecebido] = '\0';
 		gpioLigaEquipamentos(atoi(buffer));
 
