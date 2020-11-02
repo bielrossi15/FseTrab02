@@ -30,12 +30,12 @@ int sensorsSize = 8,machinesSize=6;
 
 int gpioLigaEquipamentos(int option)
 {
-
+    
     /* Situacao especial onde se deseja ativar os 2 ar-condicionados ao mesmo tempo.
      Observe que se um dos ar-condicionados estiver ligado e essa opcao for ativada
      um ar-condicionado sera ligado e o outro sera desligado.
     */
-    if(option==7){
+    if(option==6){
         bcm2835_gpio_write(machines[4].port, !machines[4].state);
         bcm2835_gpio_write(machines[5].port, !machines[5].state);
         machines[4].state = !machines[4].state;

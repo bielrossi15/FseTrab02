@@ -11,11 +11,41 @@ volatile float temperature=0,humidity = 0;
 int keepThreading = 1;
 
 
+
+
+
+int main()
+{
+    signal(SIGALRM, trataSinal);
+    signal(SIGINT, interruption);
+    while(init_bcm());
+    while(initI2C());
+
+    pthread_mutex_lock(&lock1);
+    pthread_mutex_lock(&lock2);
+    pthread_mutex_lock(&lock3);
+
+    pthread_create(&t0, NULL, gpioLampadasArCondicionado, NULL);
+    pthread_create(&t1, NULL, gpioSensores, NULL);
+    pthread_create(&t2, NULL, i2c_TemperaturaUmidade, NULL);
+    
+    ualarm(100000, 100000);
+    while (1)
+    {
+        sleep(2);
+    }
+
+    return 0;
+}
+
+
+
 void trataSinal(int sinal)
 {
     pthread_mutex_unlock(&lock1);
     if(contador==10){
         pthread_mutex_unlock(&lock2);
+        pthread_mutex_unlock(&lock3);
         contador=0;
     }
     contador++;
@@ -30,8 +60,10 @@ void interruption(int sig)
     pthread_cancel(t2);
     pthread_mutex_unlock(&lock1),
     pthread_mutex_unlock(&lock2);
+    pthread_mutex_unlock(&lock3);
     pthread_mutex_destroy(&lock1);
     pthread_mutex_destroy(&lock2);
+    pthread_mutex_destroy(&lock3);
     
     pthread_join(t2,NULL);
     pthread_join(t0,NULL);
@@ -41,32 +73,12 @@ void interruption(int sig)
     
     trata_interrupcao_gpio();
     trata_interrupcao_I2C();
+    trata_interrupcao_Servidor();
 
     exit(0);
 }
 
-int main()
-{
-    signal(SIGALRM, trataSinal);
-    signal(SIGINT, interruption);
-    while(init_bcm());
-    while(initI2C());
 
-    pthread_mutex_lock(&lock1);
-    pthread_mutex_lock(&lock2);
-
-    pthread_create(&t0, NULL, gpioLampadasArCondicionado, NULL);
-    pthread_create(&t1, NULL, gpioSensores, NULL);
-    pthread_create(&t2, NULL, i2c_TemperaturaHumidade, NULL);
-    
-    ualarm(100000, 100000);
-    while (1)
-    {
-        sleep(2);
-    }
-
-    return 0;
-}
 
 
 
@@ -74,11 +86,10 @@ int main()
 
 void *gpioLampadasArCondicionado(void *arg)
 {
-    int option = 0;
-    while (keepThreading)
+    while(keepThreading)
     {
-        scanf("%d",&option);
-        gpioLigaEquipamentos(option);
+        pthread_mutex_lock(&lock3);
+        Servidor();
     }
     return NULL;
 }
@@ -94,14 +105,14 @@ void *gpioSensores(void *arg)
 }
 
 
-void * i2c_TemperaturaHumidade(){
+void * i2c_TemperaturaUmidade(){
     //get external temperature
     while(keepThreading){
         pthread_mutex_lock(&lock2);
-        float a = TE(1);
+        float a = temperature_humidity(1);
         if(a>0){temperature = a;}
         printf("Temperatura = %f ",temperature);
-        a = TE(0);
+        a = temperature_humidity(0);
         if(a>0){humidity = a;}
         printf("Umidade = %f\n",humidity);
     }

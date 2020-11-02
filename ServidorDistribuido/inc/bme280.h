@@ -9,7 +9,7 @@ extern "C" {
 /* Header includes */
 #include "bme280_defs.h"
 
-float TE();
+float temperature_humidity();
 void trata_interrupcao_I2C();
 int initI2C();
 

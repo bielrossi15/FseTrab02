@@ -1,5 +1,5 @@
-#ifndef _main_H_
-#define _main_H_
+#ifndef _MAIN_H_
+#define _MAIN_H_
 
 #include <pthread.h>
 #include <signal.h>
@@ -8,12 +8,14 @@
 #include <ncurses.h>
 #include <curses.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "gpio.h"
 #include "bme280.h"
+#include "servidor.h"
 
 void * gpioLampadasArCondicionado();
-void * i2c_TemperaturaHumidade();
+void * i2c_TemperaturaUmidade();
 void *gpioSensores();
 void trataSinal(int sinal);
 void interruption(int sig);

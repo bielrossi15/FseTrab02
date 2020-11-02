@@ -84,7 +84,7 @@ int initI2C(){
     return 0;
 }
 
-float TE(int userOption)
+float temperature_humidity(int userOption)
 {
     option = userOption;
     float resultado = stream_sensor_data_forced_mode(&dev);
