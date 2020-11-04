@@ -5,8 +5,11 @@
 #include <signal.h>
 
 #include "cliente.h"
+#include "servidor.h"
 
 void * connectClient();
-void trataSinal();
+void * connectServidor();
+void trataSinalAlarme();
 void trataInterrupcao(int sig);
+
 #endif

@@ -51,11 +51,11 @@ void Cliente() {
 			printf("Erro no envio: numero de bytes enviados diferente do esperado\n");
 			break;
 		}
-		char buffer[20];
-		if(recv(clienteSocket,buffer, 16-1, 0) <= 0){
-			printf("Erro ao receber dados. Verifique se o o lado servidor do ServidorDistribuido se encontra ligado\n");
-			break;
-		}
+		//char buffer[20];
+		//if(recv(clienteSocket,buffer, 16-1, 0) <= 0){
+		//	printf("Erro ao receber dados. Verifique se o o lado servidor do ServidorDistribuido se encontra ligado\n");
+		//	break;
+		//}
 
 		printf("Escolha um comando de 0 a 6. 0 a 3 sendo as lâmpadas, 4 e 5 ar-condicionados\ne 6 caso deseje acionar os 2 ar-condicionados\n");
 
