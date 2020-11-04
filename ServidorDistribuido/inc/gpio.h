@@ -32,4 +32,18 @@ void gpioSensoresPresenca();
 void configura_pinos();
 void trata_interrupcao_gpio(void);
 
+
+struct device{
+    int port;
+    int state;
+};
+
+struct atualizacao{
+    float temperatura,umidade;
+	struct device machines[10];
+	struct device sensors[10];
+};
+
+struct atualizacao *updated_Values();
+
 #endif

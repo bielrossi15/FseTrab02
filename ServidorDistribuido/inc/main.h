@@ -13,11 +13,13 @@
 #include "gpio.h"
 #include "bme280.h"
 #include "servidor.h"
+#include "cliente.h"
 
 void * gpioLampadasArCondicionado();
 void * i2c_TemperaturaUmidade();
 void *gpioSensores();
 void trataSinalAlarme(int sinal);
 void interruption(int sig);
+void *sendUpdate();
 
 #endif
