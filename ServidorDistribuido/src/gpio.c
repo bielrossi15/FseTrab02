@@ -2,13 +2,9 @@
 #include <bcm2835.h>
 
 
-struct device{
-    int port;
-    int state;
-};
 
 
-struct device sensors[10] = {
+struct device sensors[] = {
     {SENSOR_PRESENCA_COZINHA,LOW}, 
     {SENSOR_PRESENCA_SALA,LOW}, 
     {SENSOR_ABERTURA_PORTA_COZINHA,LOW},
@@ -55,7 +51,7 @@ void gpioSensoresPresenca(){
     for(int i=0;i<sensorsSize;i++){
         sensors[i].state = bcm2835_gpio_lev(sensors[i].port);
         if(sensors[i].state){
-            printf("Sensor na porta %d %d\n",sensors[i].port,sensors[i].state);
+            //printf("Sensor na porta %d %d\n",sensors[i].port,sensors[i].state);
             //printf("Sensor na porta %d %d\n",sensors[i].port,sensors[i].state);
         }
     }
@@ -93,3 +89,25 @@ void trata_interrupcao_gpio(void)
     
 }
 
+struct atualizacao *updated_Values(){
+
+    struct atualizacao *update = malloc(sizeof(struct atualizacao));
+
+    
+    for (int i = 0; i < 6; i++)
+    {
+       update->machines[i].state = machines[i].state;
+       update->machines[i].port = machines[i].port;
+
+    }
+
+    for (int i = 0; i < 8; i++)
+    {
+       update->sensors[i].state = sensors[i].state;
+       update->sensors[i].port = sensors[i].port;
+
+    }
+
+    return update;
+
+}
