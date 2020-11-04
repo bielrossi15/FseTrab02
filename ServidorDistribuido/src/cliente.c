@@ -30,13 +30,13 @@ int init_Cliente() {
 
 	// Connect
 	if(connect(clienteSocket, (struct sockaddr *) &servidorAddr, sizeof(servidorAddr)) < 0){
-		printf("Erro ao conectar com o Servidor Central \n");
+		printf("Erro. Cliente Distribuido não conseguiu conectar com o Servidor Central \n");
 		return 1;
 	}
     return 0;
 }	
 
-void send_TCP_message(struct atualizacao * updates){
+int send_TCP_message(struct atualizacao * updates){
 	
     unsigned int tamanhoMensagem;
     tamanhoMensagem = sizeof(struct atualizacao);
@@ -44,16 +44,11 @@ void send_TCP_message(struct atualizacao * updates){
     int t1;
     if(t1 = send(clienteSocket, (void*)updates, tamanhoMensagem, 0),t1 != tamanhoMensagem){
         printf("Erro no envio: numero de bytes enviados diferente do esperado\n");
+		return 1;
     }
     
-    char buffer[100000];
-    if(recv(clienteSocket,buffer, 100, 0) <= 0){
-        printf("Erro ao receber dados. Verifique se o o lado servidor do ServidorDistribuido se encontra ligado\n");
-		return;
-    }
-	printf("%s",buffer);
     
-	
+	return 0;
 	//close(clienteSocket);
 	
 }

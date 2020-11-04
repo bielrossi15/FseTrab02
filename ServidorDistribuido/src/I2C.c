@@ -38,13 +38,14 @@ int8_t user_i2c_read(uint8_t reg_addr, uint8_t *data, uint32_t len, void *intf_p
 
 int8_t user_i2c_write(uint8_t reg_addr, const uint8_t *data, uint32_t len, void *intf_ptr);
 
-float stream_sensor_data_forced_mode(struct bme280_dev *dev);
+void stream_sensor_data_forced_mode(struct bme280_dev *dev);
 
 
 struct bme280_dev dev;
 struct identifier id;
 char * i2cDisp;
-int option =0;
+float *resultado;
+
 int initI2C(){
     
     i2cDisp = "/dev/i2c-1"; 
@@ -84,16 +85,12 @@ int initI2C(){
     return 0;
 }
 
-float temperature_humidity(int userOption)
+float * temperature_humidity()
 {
-    option = userOption;
-    float resultado = stream_sensor_data_forced_mode(&dev);
-    if (resultado < 0)
-    {
-        //fprintf(stderr, "Failed to stream sensor data (code %+d).\n", rslt);
-        return -1;
-    }
-
+    resultado = malloc(sizeof(float)*5);
+    resultado[0]=-1;
+    resultado[1]=-1;
+    stream_sensor_data_forced_mode(&dev);
     return resultado;
 }
 
@@ -172,7 +169,7 @@ void print_sensor_data(struct bme280_data *comp_data)
 /*!
  * @brief This API reads the sensor temperature, pressure and humidity data in forced mode.
  */
-float stream_sensor_data_forced_mode(struct bme280_dev *dev)
+void stream_sensor_data_forced_mode(struct bme280_dev *dev)
 {
     /* Variable to define the result */
     int8_t rslt = BME280_OK;
@@ -198,7 +195,7 @@ float stream_sensor_data_forced_mode(struct bme280_dev *dev)
     {
         //fprintf(stderr, "Failed to set sensor settings (code %+d).", rslt);
 
-        return rslt;
+        return;
     }
 
   
@@ -209,7 +206,7 @@ float stream_sensor_data_forced_mode(struct bme280_dev *dev)
     if (rslt != BME280_OK)
     {
         //fprintf(stderr, "Failed to set sensor mode (code %+d).", rslt);
-        return -1;
+        return ;
     }
 
     /* Wait for the measurement to complete and print data */
@@ -218,15 +215,12 @@ float stream_sensor_data_forced_mode(struct bme280_dev *dev)
     if (rslt != BME280_OK)
     {
         //fprintf(stderr, "Failed to get sensor data (code %+d).", rslt);
-        return -1;
+        return ;
     }
     
-    if(option){
-        return save_Data.temperature;
-    }
-    else{
-        return save_Data.humidity;
-    }
+    resultado[0] = save_Data.temperature;
+    resultado[1] = save_Data.humidity;
+   
 }
 
 void trata_interrupcao_I2C(){

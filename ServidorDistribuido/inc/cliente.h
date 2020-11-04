@@ -12,6 +12,6 @@
 
 int init_Cliente();
 void trata_interrupcao_Cliente();
-void send_TCP_message();
+int send_TCP_message(struct atualizacao * updates);
 
 #endif

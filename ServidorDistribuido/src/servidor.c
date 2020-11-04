@@ -12,16 +12,13 @@ void TrataClienteTCP() {
 	do{
 		if((tamanhoRecebido = recv(socketCliente, buffer, 16, 0)) < 0){
 			printf("Erro no recv()\n");
-			continue;
-		}
-		if(send(socketCliente, buffer, tamanhoRecebido, 0) != tamanhoRecebido)
-		{
-			printf("Erro no envio - send()\n");
 			return;
-
-		}	
+		}
+		
         buffer[tamanhoRecebido] = '\0';
-		gpioLigaEquipamentos(atoi(buffer));
+		if(buffer[0]=='0' ||buffer[0]=='1'||buffer[0]=='2'|| buffer[0]=='3'|| buffer[0]=='4'|| buffer[0]=='5' || buffer[0]=='6'){
+			gpioLigaEquipamentos(atoi(buffer));
+		}
 
     } while (tamanhoRecebido > 0);
 }
@@ -53,7 +50,7 @@ void Servidor() {
 
 	// Bind
 	if(bind(servidorSocket, (struct sockaddr *) &servidorAddr, sizeof(servidorAddr)) < 0){
-		printf("Falha no Bind\n");
+		printf("Falha no Bind do Servidor Distribuido\n");
 		close(servidorSocket);
 		return;
 	}

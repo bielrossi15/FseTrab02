@@ -22,11 +22,12 @@ struct device machines[] = {
     {ARCONDICIONADO_01,LOW},
     {ARCONDICIONADO_02,LOW}};
 
+
+
 int sensorsSize = 8,machinesSize=6;
 
 int gpioLigaEquipamentos(int option)
 {
-    
     /* Situacao especial onde se deseja ativar os 2 ar-condicionados ao mesmo tempo.
      Observe que se um dos ar-condicionados estiver ligado e essa opcao for ativada
      um ar-condicionado sera ligado e o outro sera desligado.
@@ -49,11 +50,8 @@ int gpioLigaEquipamentos(int option)
 void gpioSensoresPresenca(){
     
     for(int i=0;i<sensorsSize;i++){
+
         sensors[i].state = bcm2835_gpio_lev(sensors[i].port);
-        if(sensors[i].state){
-            //printf("Sensor na porta %d %d\n",sensors[i].port,sensors[i].state);
-            //printf("Sensor na porta %d %d\n",sensors[i].port,sensors[i].state);
-        }
     }
    
 }
@@ -66,12 +64,13 @@ int init_bcm(){
     
     for(int i=0;i<machinesSize;i++){
         bcm2835_gpio_fsel(machines[i].port, BCM2835_GPIO_FSEL_OUTP);
-        bcm2835_gpio_write(machines[i].port, LOW);
+        //bcm2835_gpio_write(machines[i].port, LOW);
 
     }
 
     for(int i=0;i<sensorsSize;i++){
         bcm2835_gpio_fsel(sensors[i].port, BCM2835_GPIO_FSEL_OUTP);
+        //bcm2835_gpio_write(sensors[i].port, LOW);
     }
 
     return 0;

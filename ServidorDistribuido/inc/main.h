@@ -21,5 +21,7 @@ void *gpioSensores();
 void trataSinalAlarme(int sinal);
 void interruption(int sig);
 void *sendUpdate();
+void * connectClient();
+void trataErroSocket(int signal);
 
 #endif
