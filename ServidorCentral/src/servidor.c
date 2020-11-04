@@ -26,7 +26,7 @@ void TrataClienteTCP() {
 		if((tamanhoRecebido = recv(socketCliente,(void *) &resposta, sizeof(struct atualizacao), 0)) < 0){
 			printf("Erro no recv()\n");
 		}
-
+		
 		printf("%f %f\n",resposta.temperatura,resposta.humidade);
 		for(int i=0;i<6;i++){
 			printf("machines %d %d\n",resposta.machines[i].port,resposta.machines[i].state);
@@ -36,15 +36,7 @@ void TrataClienteTCP() {
 			printf("sensors %d %d\n",resposta.sensors[i].port,resposta.sensors[i].state);
 		}
 		
-		
-		char buffer[] = "Recebido\0";
-		if(send(socketCliente, buffer, tamanhoRecebido, 0) != tamanhoRecebido)
-		{
-			printf("Erro no envio - send()\n");
-			return;
-
-		}
-	}while(tamanhoRecebido>=0);
+	}while(tamanhoRecebido>0);
 	
 
 }
@@ -59,7 +51,6 @@ void Servidor() {
 
     // Porta Servidor Distribuido
 	servidorPorta = 10021;
-	fprintf(stderr,"1\n");
 	// Abrir Socket
 	if((servidorSocket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0){
 		printf("falha no socket do Servidor\n");
@@ -76,7 +67,7 @@ void Servidor() {
 
 	// Bind
 	if(bind(servidorSocket, (struct sockaddr *) &servidorAddr, sizeof(servidorAddr)) < 0){
-		printf("Falha no Bind\n");
+		printf("Falha no Bind do Servidor Central\n");
 		close(servidorSocket);
 		return;
 	}
@@ -87,10 +78,10 @@ void Servidor() {
 		close(servidorSocket);		
 		return;
 	}
-	fprintf(stderr,"2\n");
     
 	while(1) {
 		clienteLength = sizeof(clienteAddr);
+		printf("Servidor\n");
 		if((socketCliente = accept(servidorSocket,  (struct sockaddr *) &clienteAddr, &clienteLength)) < 0)
 		{
 

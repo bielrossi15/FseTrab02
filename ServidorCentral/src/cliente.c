@@ -28,35 +28,30 @@ void Cliente() {
 
 	// Connect
 	if(connect(clienteSocket, (struct sockaddr *) &servidorAddr, sizeof(servidorAddr)) < 0){
-		printf("Erro ao conectar com o Servidor Distribuido()\n");
+		printf("Erro. Cliente Central não conseguiu conectar com o Servidor Distribuido\n");
 		return;
 	}
 
 	
 
-	char comando[20];
+	
 	printf("Escolha um comando de 0 a 6. 0 a 3 sendo as lâmpadas, 4 e 5 ar-condicionados\ne 6 caso deseje acionar os 2 ar-condicionados\n");
 
 	int validation;
-	while(scanf("%s",comando),validation = atoi(comando),validation!=-1){
+	while(scanf("%d",&validation),validation>=0 && validation <=6){
 		
 		while(validation < 0 || validation> 6){
 			printf("Comando Incorreto. Por Favor escolha um comando de 0 a 6. 0 a 3 sendo as lâmpadas, 4 e 5 ar-condicionados\ne 6 caso deseje acionar os 2 ar-condicionados\n");
-			scanf("%s",comando);
-			validation = atoi(comando);
+			scanf("%d",&validation);
 		}
 		
-		tamanhoMensagem = strlen(comando);
-		if(send(clienteSocket, comando, tamanhoMensagem, 0) != tamanhoMensagem){
+		tamanhoMensagem = 1;
+		char comando[2]; 
+		comando[0] = validation+48;
+		if(send(clienteSocket, comando, 1, 0) != tamanhoMensagem){
 			printf("Erro no envio: numero de bytes enviados diferente do esperado\n");
 			break;
 		}
-		//char buffer[20];
-		//if(recv(clienteSocket,buffer, 16-1, 0) <= 0){
-		//	printf("Erro ao receber dados. Verifique se o o lado servidor do ServidorDistribuido se encontra ligado\n");
-		//	break;
-		//}
-
 		printf("Escolha um comando de 0 a 6. 0 a 3 sendo as lâmpadas, 4 e 5 ar-condicionados\ne 6 caso deseje acionar os 2 ar-condicionados\n");
 
 	}
