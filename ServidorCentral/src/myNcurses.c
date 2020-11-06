@@ -1,11 +1,13 @@
 #include "myNcurses.h"
 
-WINDOW *windowImprimeDados,*windowEntradaUsuario;
+WINDOW *windowImprimeDados,*windowEntradaUsuario,*windowImprimeErros;
+
+char * connection;
+
 
 void initNcurs()
 {
     initscr();
-    //noecho();
     cbreak();
     keypad(stdscr, TRUE);
     curs_set(0);
@@ -14,14 +16,13 @@ void initNcurs()
     createErrosWindow();
     createEntradaUsuarioWindow();
     
-
 }
 
 void  createEntradaUsuarioWindow(){
     int yMax, xMax;
     getmaxyx(stdscr, yMax, xMax);
     int tamXwindow = xMax/10 * 8, posX = 2;
-    int tamanhoYwindowErro = 3;
+    int tamanhoYwindowErro = 5;
     int tamanhoYwindowImprimeDados = yMax / 10 * 6;
     int tamanhoYwindowEntrada = 6;
     int posY =  tamanhoYwindowErro + tamanhoYwindowImprimeDados +2;
@@ -49,13 +50,13 @@ void createErrosWindow(){
     int yMax, xMax;
     getmaxyx(stdscr, yMax, xMax);
     int tamXwindow = xMax/10 * 8, posX = 2;
-    int tamanhoYwindowErro = 3 ;
+    int tamanhoYwindowErro = 5 ;
     int posY = yMax / 10 * 6 + 2;
    
 
-    WINDOW *windowImprimeErros = newwin(tamanhoYwindowErro, tamXwindow, posY, posX);
+    windowImprimeErros = newwin(tamanhoYwindowErro, tamXwindow, posY, posX);
+    mvwprintw(windowImprimeErros, 1, 1, "Erros: ");
     box(windowImprimeErros, 0, 0);
-    mvwprintw(windowImprimeErros, 1, 1, "Erros:");
     wrefresh(windowImprimeErros);
 }
 
@@ -65,31 +66,35 @@ void * EntradaUsuario(void* parameters){
    
     mvwprintw(windowEntradaUsuario, 1, 1, "Escolha um comando de 0 a 6. 0 a 3 sendo as lâmpadas,\n 4 e 5 ar-condicionados e 6 caso deseje acionar os 2 ar-condicionados e 7 para definir a temperatura");
     mvwprintw(windowEntradaUsuario, 4, 1, "Comando:");
-    box(windowEntradaUsuario, 0, 0);
-    wrefresh(windowEntradaUsuario);
+    clearThenBox(0);
     
     int validation;
     while(mvwscanw(windowEntradaUsuario, 4, 9, "%d",&validation)){
-        mvwprintw(windowEntradaUsuario, 4, 9, "%*c",20,' ');
-        box(windowEntradaUsuario, 0, 0);
-        wrefresh(windowEntradaUsuario);
+       clearThenBox(1);
         
-        while(validation<0|| validation> 6){
+        while(validation<0|| validation> 7){
             mvwprintw(windowEntradaUsuario, 1, 1, "Comando Incorreto. Escolha um comando de 0 a 6. 0 a 3 sendo as lâmpadas,\n 4 e 5 ar-condicionados e 6 caso deseje acionar os 2 ar-condicionados e 7 para definir a temperatura");
-            box(windowEntradaUsuario, 0, 0);
-            wrefresh(windowEntradaUsuario);
+            clearThenBox(0);
             
             mvwscanw(windowEntradaUsuario, 4, 9, "%d",&validation);
-            mvwprintw(windowEntradaUsuario, 4, 9, "%*c",20,' ');
-            box(windowEntradaUsuario, 0, 0);
-            wrefresh(windowEntradaUsuario);
-
+            clearThenBox(1);
+            
         }
         
-        sendCommand(validation);
+        double temp = -15.0;
+        if(validation==7){
+            sendCommand(validation,temp);
+            mvwprintw(windowEntradaUsuario, 4, 1, "Temperatura:");
+            mvwprintw(windowEntradaUsuario, 4, 13, "%*c",20,' ');
+            box(windowEntradaUsuario, 0, 0);
+            wrefresh(windowEntradaUsuario);
+            mvwscanw(windowEntradaUsuario, 4, 13, "%lf",&temp);
+        }
+        
+        sendCommand(validation,temp);
         mvwprintw(windowEntradaUsuario, 1, 1, "Escolha um comando de 0 a 6. 0 a 3 sendo as lâmpadas,\n 4 e 5 ar-condicionados e 6 caso deseje acionar os 2 ar-condicionados e 7 para definir a temperatura");
-        box(windowEntradaUsuario, 0, 0);
-        wrefresh(windowEntradaUsuario);
+        mvwprintw(windowEntradaUsuario, 4, 1, "Comando:");
+        clearThenBox(1);
     }
 
 
@@ -131,6 +136,8 @@ void * ImprimeDados(void* parameters){
             mvwprintw(windowImprimeDados, k + 3, xMax/10+39, "%s = % d ", sensorsName[j], updateValues->sensors[j].state);
         }
 
+        printClientConection();
+
         box(windowImprimeDados, 0, 0);
         wrefresh(windowImprimeDados);
         sleep(1);
@@ -143,5 +150,42 @@ void * ImprimeDados(void* parameters){
 
 void * Erros(void* parameters){
 
+    while(1){
+        wclear(windowImprimeErros);
+        mvwprintw(windowImprimeErros, 1, 1, "Erros:");
+        box(windowImprimeErros, 0, 0);
+        wrefresh(windowImprimeErros);
+        sleep(8);
+    }
+
     return NULL;
 }
+
+void clearThenBox(int option){
+    if(option){
+        mvwprintw(windowEntradaUsuario, 4, 9, "%*c",20,' ');
+    }
+    box(windowEntradaUsuario, 0, 0);
+    wrefresh(windowEntradaUsuario);
+
+}
+
+void printError(char erro[500]){
+
+    wprintw(windowImprimeErros, "%s\n ",erro);
+	box(windowImprimeErros, 0, 0);
+	wrefresh(windowImprimeErros);
+
+}
+
+
+void setClientConection(char msg[500]){
+    connection = msg;
+}
+
+void printClientConection(){
+    int yMax,xMax;
+    getmaxyx(windowImprimeDados, yMax, xMax);
+    mvwprintw(windowImprimeDados, yMax-2,1, "Conexão do Cliente %s\n",connection);
+}
+

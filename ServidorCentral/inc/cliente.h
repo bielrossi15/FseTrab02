@@ -7,10 +7,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "myNcurses.h"
 
 int Cliente();
 void trata_interrupcao_Cliente();
-void sendCommand(int validation);
+void sendCommand(int validation,double temp);
 
 
 #endif
