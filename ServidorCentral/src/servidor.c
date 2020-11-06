@@ -3,46 +3,31 @@
 int servidorSocket;
 int socketCliente;
 
-struct device{
-	int port;
-    int state;
-};
 
 
-struct atualizacao{
-    float temperatura,humidade;
-	struct device machines[10];
-	struct device sensors[10];
-};
-
-void TrataClienteTCP() {
+void TrataClienteTCP(struct atualizacao *  updateValues) {
 	int tamanhoRecebido;
 	
-	
-	
-	
-	struct atualizacao resposta;
 	do{
-		if((tamanhoRecebido = recv(socketCliente,(void *) &resposta, sizeof(struct atualizacao), 0)) < 0){
+		if((tamanhoRecebido = recv(socketCliente,(void *) updateValues, sizeof(struct atualizacao), 0)) < 0){
 			printf("Erro no recv()\n");
 		}
-		
-		printf("%f %f\n",resposta.temperatura,resposta.humidade);
+		/*
+		printf("%f %f\n",updateValues->temperatura,updateValues->umidade);
 		for(int i=0;i<6;i++){
-			printf("machines %d %d\n",resposta.machines[i].port,resposta.machines[i].state);
+			printf("machines %d %d\n",updateValues->machines[i].port,updateValues->machines[i].state);
 		}
 
 		for(int i=0;i<8;i++){
-			printf("sensors %d %d\n",resposta.sensors[i].port,resposta.sensors[i].state);
+			printf("sensors %d %d\n",updateValues->sensors[i].port,updateValues->sensors[i].state);
 		}
-		
+		*/
 	}while(tamanhoRecebido>0);
 	
 
 }
 
-void Servidor() {
-	fprintf(stderr,"1\n");
+void Servidor(struct atualizacao *  updateValues) {
 	struct sockaddr_in servidorAddr;
 	struct sockaddr_in clienteAddr;
 	unsigned short servidorPorta;
@@ -81,7 +66,6 @@ void Servidor() {
     
 	while(1) {
 		clienteLength = sizeof(clienteAddr);
-		printf("Servidor\n");
 		if((socketCliente = accept(servidorSocket,  (struct sockaddr *) &clienteAddr, &clienteLength)) < 0)
 		{
 
@@ -91,7 +75,7 @@ void Servidor() {
 		
 		printf("Conexão do Cliente %s\n", inet_ntoa(clienteAddr.sin_addr));
 		
-		TrataClienteTCP();
+		TrataClienteTCP(updateValues);
 		close(socketCliente);
 
 	}

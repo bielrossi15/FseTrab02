@@ -9,8 +9,21 @@
 #include <unistd.h>
 
 
+
+struct device{
+	int port;
+    int state;
+};
+
+
+struct atualizacao{
+    float temperatura,umidade;
+	struct device machines[10];
+	struct device sensors[10];
+};
+
 void trata_interrupcao_Servidor();
-void TrataClienteTCP();
-void Servidor();
+void TrataClienteTCP(struct atualizacao *  updateValues);
+void Servidor(struct atualizacao *  updateValues);
 
 #endif

@@ -8,8 +8,9 @@
 #include <string.h>
 #include <unistd.h>
 
-void Cliente();
+int Cliente();
 void trata_interrupcao_Cliente();
+void sendCommand(int validation);
 
 
 #endif

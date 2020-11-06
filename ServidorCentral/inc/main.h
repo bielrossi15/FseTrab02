@@ -6,6 +6,7 @@
 
 #include "cliente.h"
 #include "servidor.h"
+#include "myNcurses.h"
 
 void * connectClient();
 void * connectServidor();

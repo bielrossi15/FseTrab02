@@ -3,17 +3,26 @@
 
 pthread_mutex_t lock1 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t lock2 = PTHREAD_MUTEX_INITIALIZER;
-pthread_t t0,t1;
+pthread_t t0,t1,t2;
 
-int contador = 0,keepThreading=1,restartClient=1;
+int contador = 0,keepThreading=1,restartClient=0;
+struct atualizacao updateValues;
+
 int main(){
 
     signal(SIGPIPE, trataErroSocket);
+    signal(SIGINT, trataInterrupcao);
 
-    pthread_create(&t1, NULL, connectServidor, NULL);
+    initNcurs();
+    
+
+    pthread_create(&t0, NULL, connectServidor, NULL);
+    pthread_create(&t1, NULL, ImprimeDados, &updateValues);
+    pthread_create(&t2, NULL, EntradaUsuario, NULL);
+
 
     while(keepThreading){
-        Cliente();
+        Servidor(&updateValues);
         sleep(2);
     }
 
@@ -23,22 +32,24 @@ int main(){
 
 
 void * connectServidor(){
+    int cont=0;
     while(keepThreading){
-        Servidor();
+        if(restartClient || cont==0){
+            restartClient = Cliente();
+            cont=1;
+        }
         sleep(2);
     }
+   
     return NULL;
 }
 
 
 void trataErroSocket(int signal){
     trata_interrupcao_Cliente();
-    printf("1 - entrei no socket int\n");
-
     sleep(5);
-    printf("2 - entrei no socket int\n");
     // espera 5 segundos e tenta reconectar o cliente
-    Cliente();
+    restartClient=1;
     printf("3 - entrei no socket int\n");
     return;
 }
@@ -49,6 +60,7 @@ void trataInterrupcao(int sig)
     keepThreading=0;
    
     trata_interrupcao_Cliente();
-
+    clear();
+    endwin();
     exit(0);
 }
