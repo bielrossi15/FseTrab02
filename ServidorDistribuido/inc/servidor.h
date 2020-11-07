@@ -13,5 +13,6 @@
 void trata_interrupcao_Servidor();
 void TrataClienteTCP();
 void Servidor();
+double *userDefinedTemp;
 
 #endif

@@ -7,7 +7,8 @@ pthread_mutex_t lock2 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t lock3 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t lock4 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t lock5 = PTHREAD_MUTEX_INITIALIZER;
-pthread_t t0, t1, t2,t3,t4;
+pthread_mutex_t lock6 = PTHREAD_MUTEX_INITIALIZER;
+pthread_t t0, t1, t2,t3,t4,t5;
 
 int contador = 0,contador2=0 ,contador3=0;
 volatile int restartClient=1;
@@ -26,23 +27,24 @@ int main()
     signal(SIGINT, interruption);
     while(init_bcm());
     while(initI2C());
-  
+    
 
     pthread_mutex_lock(&lock5);
+    pthread_mutex_lock(&lock6);
    
 
     pthread_create(&t1, NULL, gpioSensores, NULL);
     pthread_create(&t2, NULL, i2c_TemperaturaUmidade, NULL);
     pthread_create(&t3, NULL, sendUpdate, NULL);
     pthread_create(&t4, NULL, connectClient, NULL);
+    pthread_create(&t5, NULL, regulateTemperature, NULL);
     
     ualarm(100000, 100000);
    
     while(keepThreading)
     {
         Servidor();
-
-        sleep(2);   
+        while(contador3<20);  
     }
   
 
@@ -60,19 +62,50 @@ void trataSinalAlarme(int sinal)
     }
 
     if(contador2==10){
+        pthread_mutex_unlock(&lock6); 
         pthread_mutex_unlock(&lock5);
         contador2=0;
     }
 
     if(contador3==20){
+        if(*userDefinedTemp)
         pthread_mutex_unlock(&lock4);  
         contador3=0;  
     }
     
+   
     contador++;
     contador2++;
     contador3++;
 }
+
+
+void * regulateTemperature(){
+    while(keepThreading){
+        pthread_mutex_lock(&lock6);
+
+        if(tempHumidity[0]+2<=*userDefinedTemp){
+            if(update->machines[4].state==0){
+                gpioLigaEquipamentos(4);
+            }
+            if(update->machines[5].state==0){
+                gpioLigaEquipamentos(5);
+            }
+     
+        }
+        else{
+             if(update->machines[4].state==1){
+                gpioLigaEquipamentos(4);
+            }
+            if(update->machines[5].state==1){
+                gpioLigaEquipamentos(5);
+            }
+        }
+    }
+    return NULL;
+
+}
+
 
 void interruption(int sig)
 {
@@ -86,19 +119,22 @@ void interruption(int sig)
     pthread_cancel(t4);
     pthread_mutex_unlock(&lock1),
     pthread_mutex_unlock(&lock2);
-    //pthread_mutex_unlock(&lock3);
+    pthread_mutex_unlock(&lock3);
     pthread_mutex_unlock(&lock4);
     pthread_mutex_unlock(&lock5);
+    pthread_mutex_unlock(&lock6);
     pthread_mutex_destroy(&lock1);
     pthread_mutex_destroy(&lock2);
     pthread_mutex_destroy(&lock3);
     pthread_mutex_destroy(&lock4);
     pthread_mutex_destroy(&lock5);
+    pthread_mutex_destroy(&lock6);
     
     pthread_join(t1,NULL);
     pthread_join(t2,NULL);
     pthread_join(t3,NULL);
     pthread_join(t4,NULL);
+    pthread_join(t5,NULL);
     
     //fprintf(stderr,"Passei das threads\n");
     trata_interrupcao_gpio();
