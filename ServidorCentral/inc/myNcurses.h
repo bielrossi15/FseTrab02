@@ -18,5 +18,11 @@ void createErrosWindow();
 void * EntradaUsuario(void* parameters);
 void * ImprimeDados(void* parameters);
 void * Erros(void* parameters);
+void clearThenBox(int option);
+void printError(char erro[500]);
+void printClientConection();
+void setClientConection(char msg[500]);
+
+
 
 #endif

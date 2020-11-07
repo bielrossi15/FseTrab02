@@ -3,7 +3,7 @@
 
 pthread_mutex_t lock1 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t lock2 = PTHREAD_MUTEX_INITIALIZER;
-pthread_t t0,t1,t2;
+pthread_t t0,t1,t2,t3;
 
 int contador = 0,keepThreading=1,restartClient=0;
 struct atualizacao updateValues;
@@ -14,11 +14,10 @@ int main(){
     signal(SIGINT, trataInterrupcao);
 
     initNcurs();
-    
-
     pthread_create(&t0, NULL, connectServidor, NULL);
     pthread_create(&t1, NULL, ImprimeDados, &updateValues);
     pthread_create(&t2, NULL, EntradaUsuario, NULL);
+    pthread_create(&t3, NULL, Erros, NULL);
 
 
     while(keepThreading){

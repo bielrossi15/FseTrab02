@@ -10,7 +10,7 @@ void TrataClienteTCP(struct atualizacao *  updateValues) {
 	
 	do{
 		if((tamanhoRecebido = recv(socketCliente,(void *) updateValues, sizeof(struct atualizacao), 0)) < 0){
-			printf("Erro no recv()\n");
+			printError("Erro no recv()");
 		}
 		/*
 		printf("%f %f\n",updateValues->temperatura,updateValues->umidade);
@@ -38,7 +38,7 @@ void Servidor(struct atualizacao *  updateValues) {
 	servidorPorta = 10021;
 	// Abrir Socket
 	if((servidorSocket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0){
-		printf("falha no socket do Servidor\n");
+		printError("falha no socket do Servidor");
 		close(servidorSocket);
 		return;
 	}
@@ -52,14 +52,14 @@ void Servidor(struct atualizacao *  updateValues) {
 
 	// Bind
 	if(bind(servidorSocket, (struct sockaddr *) &servidorAddr, sizeof(servidorAddr)) < 0){
-		printf("Falha no Bind do Servidor Central\n");
+		printError("Falha no Bind do Servidor Central");
 		close(servidorSocket);
 		return;
 	}
 
 	// Listen
 	if(listen(servidorSocket, 10) < 0){
-		printf("Falha no Listen\n");
+		printError("Falha no Listen\n");
 		close(servidorSocket);		
 		return;
 	}
@@ -69,11 +69,11 @@ void Servidor(struct atualizacao *  updateValues) {
 		if((socketCliente = accept(servidorSocket,  (struct sockaddr *) &clienteAddr, &clienteLength)) < 0)
 		{
 
-			printf("Falha no Accept\n");
+			printError("Falha no Accept\n");
 			continue;
 	 	}
 		
-		printf("Conexão do Cliente %s\n", inet_ntoa(clienteAddr.sin_addr));
+		setClientConection(inet_ntoa(clienteAddr.sin_addr));
 		
 		TrataClienteTCP(updateValues);
 		close(socketCliente);
