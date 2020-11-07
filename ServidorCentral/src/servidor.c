@@ -22,9 +22,14 @@ void TrataClienteTCP(struct atualizacao *  updateValues) {
 		*/
 		
 		if(intermediario->temperatura <0){
+			
 			for(int i=0;i<8;i++){
 				if(intermediario->sensors[i].state){
 					updateValues->sensors[i].state = intermediario->sensors[i].state;	
+					if(!alarmPlaying){
+						system("omxplayer --no-keys src/example.mp3 > /dev/null 2>&1 & ");	
+						alarmPlaying=1;	
+					}
 				}
 			}
 		}
