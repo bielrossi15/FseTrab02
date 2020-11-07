@@ -131,7 +131,7 @@ void * ImprimeDados(void* parameters){
         struct tm *tm = localtime(&t);
         
         wclear(windowImprimeDados);
-        mvwprintw(windowImprimeDados, 1, xMax/6, "Temperatura = %f     Umidade = %f      Temperatura definida pelo Usuário %lf",updateValues->temperatura,updateValues->umidade,userDefinedTemp);
+        mvwprintw(windowImprimeDados, 1, 1, "Temperatura = %f     Umidade = %f      Temperatura definida pelo Usuário %lf",updateValues->temperatura,updateValues->umidade,userDefinedTemp);
         
         for(int j=0;j<4;j++){
            

@@ -43,7 +43,6 @@ void Servidor(struct atualizacao *  updateValues) {
 		return;
 	}
 
-
 	// Montar a estrutura sockaddr_in
 	memset(&servidorAddr, 0, sizeof(servidorAddr)); // Zerando a estrutura de dados
 	servidorAddr.sin_family = AF_INET;
@@ -57,15 +56,15 @@ void Servidor(struct atualizacao *  updateValues) {
 		return;
 	}
 
+
 	// Listen
 	if(listen(servidorSocket, 10) < 0){
 		printError("Falha no Listen\n");
 		close(servidorSocket);		
 		return;
 	}
-    
+  
 	while(1) {
-		printError("entrei aqui");
 		clienteLength = sizeof(clienteAddr);
 		if((socketCliente = accept(servidorSocket,  (struct sockaddr *) &clienteAddr, &clienteLength)) < 0)
 		{
@@ -73,7 +72,7 @@ void Servidor(struct atualizacao *  updateValues) {
 			printError("Falha no Accept\n");
 			continue;
 	 	}
-		
+	
 		setClientConection(inet_ntoa(clienteAddr.sin_addr));
 		
 		TrataClienteTCP(updateValues);
