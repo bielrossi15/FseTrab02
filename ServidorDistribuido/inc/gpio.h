@@ -33,6 +33,7 @@ void gpioSensoresPresenca();
 void configura_pinos();
 void trata_interrupcao_gpio(void);
 
+extern volatile int restartClient;
 
 struct atualizacao *updated_Values();
 

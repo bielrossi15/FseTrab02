@@ -23,7 +23,7 @@ struct device machines[] = {
     {ARCONDICIONADO_02,LOW}};
 
 
-
+volatile int restartClient;
 int sensorsSize = 8,machinesSize=6;
 
 int gpioLigaEquipamentos(int option)
@@ -60,7 +60,7 @@ void gpioSensoresPresenca(){
             rapidUpdate->sensors[i].state = sensors[i].state;
         }
        
-       if(cont>0){
+       if(cont>0 && !restartClient){
            send_TCP_message(rapidUpdate);
        }
     }
