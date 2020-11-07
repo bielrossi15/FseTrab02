@@ -44,7 +44,9 @@ int main()
     while(keepThreading)
     {
         Servidor();
-        while(contador3<20);  
+        while(contador3<20); 
+        contador3=0;
+        printf("%d\n",contador3); 
     }
   
 
