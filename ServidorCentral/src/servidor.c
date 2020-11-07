@@ -7,7 +7,7 @@ int socketCliente;
 
 void TrataClienteTCP(struct atualizacao *  updateValues) {
 	int tamanhoRecebido;
-	
+	int alarmPlaying = 0;
 	do{
 		if((tamanhoRecebido = recv(socketCliente,(void *) updateValues, sizeof(struct atualizacao), 0)) < 0){
 			printError("Erro no recv()");
@@ -17,11 +17,23 @@ void TrataClienteTCP(struct atualizacao *  updateValues) {
 		for(int i=0;i<6;i++){
 			printf("machines %d %d\n",updateValues->machines[i].port,updateValues->machines[i].state);
 		}
-
-		for(int i=0;i<8;i++){
-			printf("sensors %d %d\n",updateValues->sensors[i].port,updateValues->sensors[i].state);
-		}
 		*/
+		int cont=0;
+		int i=0;
+		for(i=0;i<8;i++){
+			if(updateValues->sensors[i].state){
+				if(!alarmPlaying){
+					system("omxplayer --no-keys src/example.mp3 & > /dev/null 2>&1");	
+					alarmPlaying=1;	
+					break;
+				}
+			}
+		}
+		if(i==8){
+			//system("q");
+			alarmPlaying=0;
+		}
+		
 	}while(tamanhoRecebido>0);
 	
 
