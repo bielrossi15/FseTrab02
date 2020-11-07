@@ -17,6 +17,7 @@ int keepThreading = 1;
 struct atualizacao *update;
 
 volatile double userDefinedTemp = 100.5;
+int tempControlledbyUser;
 
 int main()
 {
@@ -47,7 +48,6 @@ int main()
         Servidor();
         while(contador3<20); 
         contador3=0;
-        printf("%d\n",contador3); 
     }
   
 
@@ -83,30 +83,31 @@ void trataSinalAlarme(int sinal)
 
 
 void * regulateTemperature(){
-    //int min=1,max=0;
+   
     while(keepThreading){
         pthread_mutex_lock(&lock6);
+        printf("temp controlled = %d\n",tempControlledbyUser);
+        if(tempControlledbyUser){
+            printf("temp = %lf\n %f",userDefinedTemp,tempHumidity[0]);
+            if(userDefinedTemp - 2 < tempHumidity[0]){
+                if(update->machines[4].state==0){
+                    gpioLigaEquipamentos(4);
+                }
+                if(update->machines[5].state==0){
+                    gpioLigaEquipamentos(5);
+                }
 
-        //printf("temp = %lf\n %f",userDefinedTemp,tempHumidity[0]);
-        if(userDefinedTemp - 2 < tempHumidity[0]){
-            if(update->machines[4].state==0){
-                gpioLigaEquipamentos(4);
-            }
-            if(update->machines[5].state==0){
-                gpioLigaEquipamentos(5);
             }
 
+            else if(userDefinedTemp + 2 > tempHumidity[0]){
+                if(update->machines[4].state==1){
+                    gpioLigaEquipamentos(4);
+                }
+                if(update->machines[5].state==1){
+                    gpioLigaEquipamentos(5);
+                }
+            }
         }
-
-        else if(userDefinedTemp + 2 > tempHumidity[0]){
-            if(update->machines[4].state==1){
-                gpioLigaEquipamentos(4);
-            }
-            if(update->machines[5].state==1){
-                gpioLigaEquipamentos(5);
-            }
-        }
-
 
     }
     return NULL;
@@ -116,7 +117,7 @@ void * regulateTemperature(){
 
 void interruption(int sig)
 {
-    fprintf(stderr,"%d\n",sig);
+   
     ualarm(0,0);
     keepThreading=0;
     

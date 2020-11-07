@@ -64,7 +64,7 @@ int init_bcm(){
     
     for(int i=0;i<machinesSize;i++){
         bcm2835_gpio_fsel(machines[i].port, BCM2835_GPIO_FSEL_OUTP);
-        //bcm2835_gpio_write(machines[i].port, LOW);
+        bcm2835_gpio_write(machines[i].port, LOW);
 
     }
 

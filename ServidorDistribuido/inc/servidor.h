@@ -14,5 +14,6 @@ void trata_interrupcao_Servidor();
 void TrataClienteTCP();
 void Servidor();
 extern volatile double userDefinedTemp;
+extern int tempControlledbyUser;
 
 #endif

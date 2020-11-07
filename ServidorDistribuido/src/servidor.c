@@ -2,6 +2,7 @@
 
 int servidorSocket;
 int socketCliente;
+int tempControlledbyUser=0;
 
 volatile double userDefinedTemp;
 
@@ -9,7 +10,7 @@ void TrataClienteTCP() {
 	char buffer[16];
 	int tamanhoRecebido;
 	int receiveTemp=0;
-
+	
 	do{
 		if(receiveTemp){
 			double temp=153.4;
@@ -18,7 +19,7 @@ void TrataClienteTCP() {
 				return;
 			}
 			userDefinedTemp = temp;
-			printf("Temp = %lf  %lf   \n",temp,userDefinedTemp);	
+			receiveTemp=0;	
 		}
 		else{
 			if((tamanhoRecebido = recv(socketCliente, buffer, 16, 0)) < 0){
@@ -27,12 +28,18 @@ void TrataClienteTCP() {
 			}
 		
 			buffer[tamanhoRecebido] = '\0';
-			if(buffer[0]=='0' ||buffer[0]=='1'||buffer[0]=='2'|| buffer[0]=='3'|| buffer[0]=='4'|| buffer[0]=='5' || buffer[0]=='6'){
+			if(buffer[0]=='0' ||buffer[0]=='1'||buffer[0]=='2'|| buffer[0]=='3'){
 				gpioLigaEquipamentos(atoi(buffer));
 			}
-			if(buffer[0]=='7'){
-				receiveTemp=1;
+			else if( buffer[0]=='5' || buffer[0]=='6' || buffer[0]=='4'){
+				tempControlledbyUser=0;
+				gpioLigaEquipamentos(atoi(buffer));
 			}
+			else if(buffer[0]=='7'){
+				receiveTemp=1;
+				tempControlledbyUser=1;
+			}
+
 		}
 		
 
