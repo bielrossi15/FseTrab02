@@ -3,6 +3,7 @@
 int servidorSocket;
 int socketCliente;
 
+volatile double userDefinedTemp;
 
 void TrataClienteTCP() {
 	char buffer[16];
@@ -11,13 +12,13 @@ void TrataClienteTCP() {
 
 	do{
 		if(receiveTemp){
-			double temp;
+			double temp=153.4;
 			if((tamanhoRecebido = recv(socketCliente,(void*)&temp, sizeof(double), 0)) < 0){
 				printf("Erro no recv()\n");
 				return;
 			}
-			*userDefinedTemp = temp;
-			printf("Temp = %lf  %lf   \n",temp,*userDefinedTemp);	
+			userDefinedTemp = temp;
+			printf("Temp = %lf  %lf   \n",temp,userDefinedTemp);	
 		}
 		else{
 			if((tamanhoRecebido = recv(socketCliente, buffer, 16, 0)) < 0){
@@ -40,7 +41,6 @@ void TrataClienteTCP() {
 
 void Servidor() {
 	
-	userDefinedTemp = malloc(sizeof(double));
 	
 	struct sockaddr_in servidorAddr;
 	struct sockaddr_in clienteAddr;
@@ -78,6 +78,7 @@ void Servidor() {
 		close(servidorSocket);		
 		return;
 	}
+
     
 	while(1) {
 		clienteLength = sizeof(clienteAddr);
@@ -100,5 +101,4 @@ void Servidor() {
 void trata_interrupcao_Servidor(){
 	close(socketCliente);
 	close(servidorSocket);
-	free(userDefinedTemp);
 }

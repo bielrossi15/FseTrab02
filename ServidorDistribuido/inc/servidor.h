@@ -13,6 +13,6 @@
 void trata_interrupcao_Servidor();
 void TrataClienteTCP();
 void Servidor();
-double *userDefinedTemp;
+extern volatile double userDefinedTemp;
 
 #endif
