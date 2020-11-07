@@ -9,8 +9,9 @@ void TrataClienteTCP(struct atualizacao *  updateValues) {
 	int tamanhoRecebido;
 	int alarmPlaying = 0;
 	int cont=0;
+	struct atualizacao * intermediario = malloc(sizeof(struct atualizacao));
 	do{
-		if((tamanhoRecebido = recv(socketCliente,(void *) updateValues, sizeof(struct atualizacao), 0)) < 0){
+		if((tamanhoRecebido = recv(socketCliente,(void *) intermediario, sizeof(struct atualizacao), 0)) < 0){
 			printError("Erro no recv()");
 		}
 		/*
@@ -20,22 +21,32 @@ void TrataClienteTCP(struct atualizacao *  updateValues) {
 		}
 		*/
 		
-		int i=0;
-		for(i=0;i<8;i++){
-			if(updateValues->sensors[i].state){
-				if(!alarmPlaying){
-					system("omxplayer --no-keys src/example.mp3 > /dev/null 2>&1 & ");	
-					alarmPlaying=1;	
+		if(intermediario->temperatura <0){
+			for(int i=0;i<8;i++){
+				if(intermediario->sensors[i].state){
+					updateValues->sensors[i].state = intermediario->sensors[i].state;	
 				}
-					break;
 			}
 		}
-		if(i==8 || cont==4){
-			alarmPlaying=0;
-			cont=0;
-		}
+		else{
+			*updateValues = *intermediario;
 		
-		cont++;
+			int i=0;
+			for(i=0;i<8;i++){
+				if(updateValues->sensors[i].state){
+					if(!alarmPlaying){
+						system("omxplayer --no-keys src/example.mp3 > /dev/null 2>&1 & ");	
+						alarmPlaying=1;	
+					}
+						break;
+				}
+			}
+			if(i==8 || cont==4){
+				alarmPlaying=0;
+				cont=0;
+			}
+			cont++;
+		}
 	}while(tamanhoRecebido>0);
 	
 
