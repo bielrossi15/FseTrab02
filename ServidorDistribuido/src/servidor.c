@@ -7,23 +7,40 @@ int socketCliente;
 void TrataClienteTCP() {
 	char buffer[16];
 	int tamanhoRecebido;
-
+	int receiveTemp=0;
 
 	do{
-		if((tamanhoRecebido = recv(socketCliente, buffer, 16, 0)) < 0){
-			printf("Erro no recv()\n");
-			return;
+		if(receiveTemp){
+			double temp;
+			if((tamanhoRecebido = recv(socketCliente,(void*)&temp, sizeof(double), 0)) < 0){
+				printf("Erro no recv()\n");
+				return;
+			}
+			*userDefinedTemp = temp;
+			printf("Temp = %lf  %lf   \n",temp,*userDefinedTemp);	
+		}
+		else{
+			if((tamanhoRecebido = recv(socketCliente, buffer, 16, 0)) < 0){
+				printf("Erro no recv()\n");
+				return;
+			}
+		
+			buffer[tamanhoRecebido] = '\0';
+			if(buffer[0]=='0' ||buffer[0]=='1'||buffer[0]=='2'|| buffer[0]=='3'|| buffer[0]=='4'|| buffer[0]=='5' || buffer[0]=='6'){
+				gpioLigaEquipamentos(atoi(buffer));
+			}
+			if(buffer[0]=='7'){
+				receiveTemp=1;
+			}
 		}
 		
-        buffer[tamanhoRecebido] = '\0';
-		if(buffer[0]=='0' ||buffer[0]=='1'||buffer[0]=='2'|| buffer[0]=='3'|| buffer[0]=='4'|| buffer[0]=='5' || buffer[0]=='6'){
-			gpioLigaEquipamentos(atoi(buffer));
-		}
 
     } while (tamanhoRecebido > 0);
 }
 
 void Servidor() {
+	
+	userDefinedTemp = malloc(sizeof(double));
 	
 	struct sockaddr_in servidorAddr;
 	struct sockaddr_in clienteAddr;
@@ -83,4 +100,5 @@ void Servidor() {
 void trata_interrupcao_Servidor(){
 	close(socketCliente);
 	close(servidorSocket);
+	free(userDefinedTemp);
 }
