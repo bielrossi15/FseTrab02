@@ -7,6 +7,11 @@ double userDefinedTemp;
 
 void initNcurs()
 {
+    fp=fopen("relatorio.csv","w");
+    fprintf(fp,"Comando, Alarme Ativado, Horário\n");
+    fclose(fp);
+    fp=fopen("relatorio.csv","a");
+    
     initscr();
     cbreak();
     keypad(stdscr, TRUE);
@@ -122,20 +127,33 @@ void * ImprimeDados(void* parameters){
     
 
     while(1){
+        time_t t = time(NULL);
+        struct tm *tm = localtime(&t);
+        
         wclear(windowImprimeDados);
         mvwprintw(windowImprimeDados, 1, xMax/6, "Temperatura = %f     Umidade = %f      Temperatura definida pelo Usuário %lf",updateValues->temperatura,updateValues->umidade,userDefinedTemp);
+        
         for(int j=0;j<4;j++){
            
             mvwprintw(windowImprimeDados, j+3, xMax/10, "Estado Lâmpada %d = %d %*c %s = %d", j+1 , updateValues->machines[j].state,16,' ',sensorsName[j], updateValues->sensors[j].state);
+            if(updateValues->sensors[j].state){
+                fprintf(fp,"nenhum, %s , %s", sensorsName[j], asctime(tm));
+            }
         }
         for (int j = 4; j < 6; j++)
         {
            
             mvwprintw(windowImprimeDados, j + 3, xMax/10, "Estado Arcondicionado %d = %d %*c %s = % d ",j-4, updateValues->machines[j].state,10,' ',sensorsName[j], updateValues->sensors[j].state);
+            if(updateValues->sensors[j].state){
+                fprintf(fp,"nenhum, %s , %s", sensorsName[j], asctime(tm));
+            }
         }
         for(int j=6;j<8;j++){
           
             mvwprintw(windowImprimeDados, j + 3, xMax/10+39, "%s = % d ", sensorsName[j], updateValues->sensors[j].state);
+            if(updateValues->sensors[j].state){
+                fprintf(fp,"nenhum, %s , %s", sensorsName[j], asctime(tm));
+            }
         }
 
         printClientConection();

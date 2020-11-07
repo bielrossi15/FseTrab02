@@ -8,8 +8,8 @@
 #include "servidor.h"
 #include "myNcurses.h"
 
+
 void * connectClient();
-void * connectServidor();
 void trataSinalAlarme();
 void trataInterrupcao(int sig);
 void trataErroSocket(int signal);

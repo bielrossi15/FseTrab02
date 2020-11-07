@@ -22,6 +22,7 @@ void clearThenBox(int option);
 void printError(char erro[500]);
 void printClientConection();
 void setClientConection(char msg[500]);
+FILE * fp;
 
 
 

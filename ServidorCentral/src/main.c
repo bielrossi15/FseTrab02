@@ -14,7 +14,7 @@ int main(){
     signal(SIGINT, trataInterrupcao);
 
     initNcurs();
-    pthread_create(&t0, NULL, connectServidor, NULL);
+    pthread_create(&t0, NULL, connectClient, NULL);
     pthread_create(&t1, NULL, ImprimeDados, &updateValues);
     pthread_create(&t2, NULL, EntradaUsuario, NULL);
     pthread_create(&t3, NULL, Erros, NULL);
@@ -30,7 +30,7 @@ int main(){
 }
 
 
-void * connectServidor(){
+void * connectClient(){
     int cont=0;
     while(keepThreading){
         if(restartClient || cont==0){
@@ -60,5 +60,6 @@ void trataInterrupcao(int sig)
     trata_interrupcao_Cliente();
     clear();
     endwin();
+    fclose(fp);
     exit(0);
 }

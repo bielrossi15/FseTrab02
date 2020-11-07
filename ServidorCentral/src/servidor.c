@@ -65,6 +65,7 @@ void Servidor(struct atualizacao *  updateValues) {
 	}
     
 	while(1) {
+		printError("entrei aqui");
 		clienteLength = sizeof(clienteAddr);
 		if((socketCliente = accept(servidorSocket,  (struct sockaddr *) &clienteAddr, &clienteLength)) < 0)
 		{

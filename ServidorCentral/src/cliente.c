@@ -53,6 +53,11 @@ void sendCommand(int validation, double temp){
 			return;
 		}
 	}
+	
+    time_t t = time(NULL);
+    struct tm *tm = localtime(&t);
+    fprintf(fp,"%d, nenhum , %s", validation, asctime(tm));
+    
 }
 
 void trata_interrupcao_Cliente(){
