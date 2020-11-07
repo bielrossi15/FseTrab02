@@ -3,7 +3,7 @@
 WINDOW *windowImprimeDados,*windowEntradaUsuario,*windowImprimeErros;
 
 char * connection;
-
+double userDefinedTemp;
 
 void initNcurs()
 {
@@ -84,11 +84,13 @@ void * EntradaUsuario(void* parameters){
         double temp = -15.0;
         if(validation==7){
             sendCommand(validation,temp);
+            mvwprintw(windowEntradaUsuario, 1, 1, "Digite a temperatura Correta");
             mvwprintw(windowEntradaUsuario, 4, 1, "Temperatura:");
             mvwprintw(windowEntradaUsuario, 4, 13, "%*c",20,' ');
             box(windowEntradaUsuario, 0, 0);
             wrefresh(windowEntradaUsuario);
-            mvwscanw(windowEntradaUsuario, 4, 13, "%lf",&temp);
+            mvwscanw(windowEntradaUsuario, 4, 13, "%lf",&userDefinedTemp);
+            temp = userDefinedTemp;
         }
         
         sendCommand(validation,temp);
@@ -117,23 +119,23 @@ void * ImprimeDados(void* parameters){
     int yMax, xMax;
     getmaxyx(stdscr, yMax, xMax);
 
-    int k;
+    
 
     while(1){
         wclear(windowImprimeDados);
-        mvwprintw(windowImprimeDados, 1, xMax/4, "Temperatura = %f     Umidade = %f",updateValues->temperatura,updateValues->umidade);
+        mvwprintw(windowImprimeDados, 1, xMax/6, "Temperatura = %f     Umidade = %f      Temperatura definida pelo Usuário %lf",updateValues->temperatura,updateValues->umidade,userDefinedTemp);
         for(int j=0;j<4;j++){
-            k = 2 * j;
-            mvwprintw(windowImprimeDados, k+3, xMax/10, "Estado Lâmpada %d = %d %*c %s = %d", j+1 , updateValues->machines[j].state,16,' ',sensorsName[j], updateValues->sensors[j].state);
+           
+            mvwprintw(windowImprimeDados, j+3, xMax/10, "Estado Lâmpada %d = %d %*c %s = %d", j+1 , updateValues->machines[j].state,16,' ',sensorsName[j], updateValues->sensors[j].state);
         }
         for (int j = 4; j < 6; j++)
         {
-            k = 2 * j;
-            mvwprintw(windowImprimeDados, k + 3, xMax/10, "Estado Arcondicionado %d = %d %*c %s = % d ",j-4, updateValues->machines[j].state,10,' ',sensorsName[j], updateValues->sensors[j].state);
+           
+            mvwprintw(windowImprimeDados, j + 3, xMax/10, "Estado Arcondicionado %d = %d %*c %s = % d ",j-4, updateValues->machines[j].state,10,' ',sensorsName[j], updateValues->sensors[j].state);
         }
         for(int j=6;j<8;j++){
-            k = 2 * j;
-            mvwprintw(windowImprimeDados, k + 3, xMax/10+39, "%s = % d ", sensorsName[j], updateValues->sensors[j].state);
+          
+            mvwprintw(windowImprimeDados, j + 3, xMax/10+39, "%s = % d ", sensorsName[j], updateValues->sensors[j].state);
         }
 
         printClientConection();

@@ -34,9 +34,7 @@ int Cliente() {
 }
 
 void sendCommand(int validation, double temp){
-	char s[100];
-	sprintf(s,"%lf", temp);
-	printError(s);
+	
 	if(temp >0){
 		double * temperatura;
 		temperatura = &temp;
