@@ -86,9 +86,9 @@ void * regulateTemperature(){
    
     while(keepThreading){
         pthread_mutex_lock(&lock6);
-        printf("temp controlled = %d\n",tempControlledbyUser);
+       
         if(tempControlledbyUser){
-            printf("temp = %lf\n %f",userDefinedTemp,tempHumidity[0]);
+            
             if(userDefinedTemp - 2 < tempHumidity[0]){
                 if(update->machines[4].state==0){
                     gpioLigaEquipamentos(4);

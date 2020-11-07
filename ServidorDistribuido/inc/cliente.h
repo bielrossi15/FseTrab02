@@ -8,7 +8,17 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "gpio.h"
+struct device{
+    int port;
+    int state;
+};
+
+struct atualizacao{
+    float temperatura,umidade;
+	struct device machines[10];
+	struct device sensors[10];
+};
+
 
 int init_Cliente();
 void trata_interrupcao_Cliente();

@@ -48,10 +48,21 @@ int gpioLigaEquipamentos(int option)
 }
 
 void gpioSensoresPresenca(){
-    
+       
+    struct atualizacao * rapidUpdate = malloc(sizeof(struct atualizacao));
+    rapidUpdate->temperatura = -1.0;
+    int cont=0;
     for(int i=0;i<sensorsSize;i++){
-
+    
         sensors[i].state = bcm2835_gpio_lev(sensors[i].port);
+        if(sensors[i].state){
+            cont++;
+            rapidUpdate->sensors[i].state = sensors[i].state;
+        }
+       
+       if(cont>0){
+           send_TCP_message(rapidUpdate);
+       }
     }
    
 }

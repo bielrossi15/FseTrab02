@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <stdlib.h>
+#include "cliente.h"
 
 #define LAMPADA_01 RPI_V2_GPIO_P1_11
 #define LAMPADA_02 RPI_V2_GPIO_P1_12
@@ -32,17 +33,6 @@ void gpioSensoresPresenca();
 void configura_pinos();
 void trata_interrupcao_gpio(void);
 
-
-struct device{
-    int port;
-    int state;
-};
-
-struct atualizacao{
-    float temperatura,umidade;
-	struct device machines[10];
-	struct device sensors[10];
-};
 
 struct atualizacao *updated_Values();
 
