@@ -89,6 +89,8 @@ void * EntradaUsuario(void* parameters){
         double temp = -15.0;
         if(validation==7){
             sendCommand(validation,temp);
+            mvwprintw(windowEntradaUsuario, 1, 1, "%*c",100,' ');
+            mvwprintw(windowEntradaUsuario, 2, 1, "%*c",100,' ');
             mvwprintw(windowEntradaUsuario, 1, 1, "Digite a temperatura Correta");
             mvwprintw(windowEntradaUsuario, 4, 1, "Temperatura:");
             mvwprintw(windowEntradaUsuario, 4, 13, "%*c",20,' ');
