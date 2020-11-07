@@ -49,7 +49,6 @@ void trataErroSocket(int signal){
     sleep(5);
     // espera 5 segundos e tenta reconectar o cliente
     restartClient=1;
-    printf("3 - entrei no socket int\n");
     return;
 }
 
