@@ -24,7 +24,7 @@ void TrataClienteTCP(struct atualizacao *  updateValues) {
 		for(i=0;i<8;i++){
 			if(updateValues->sensors[i].state){
 				if(!alarmPlaying){
-					system("omxplayer --no-keys src/example.mp3 & > /dev/null 2>&1");	
+					system("omxplayer --no-keys src/example.mp3 > /dev/null 2>&1 & ");	
 					alarmPlaying=1;	
 				}
 					break;
