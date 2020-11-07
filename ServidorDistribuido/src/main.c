@@ -16,19 +16,20 @@ float * tempHumidity;
 int keepThreading = 1;
 struct atualizacao *update;
 
-
+volatile double userDefinedTemp = 100.5;
 
 int main()
 {
-    update=  malloc(sizeof(struct atualizacao));
-    tempHumidity=  malloc(sizeof(float)*5);
+    update=  malloc(sizeof(struct atualizacao));  
+
     signal(SIGPIPE, trataErroSocket);
     signal(SIGALRM, trataSinalAlarme);
     signal(SIGINT, interruption);
+    tempHumidity =  (float*) calloc(5,sizeof(float));
     while(init_bcm());
     while(initI2C());
     
-
+    
     pthread_mutex_lock(&lock5);
     pthread_mutex_lock(&lock6);
    
@@ -70,7 +71,6 @@ void trataSinalAlarme(int sinal)
     }
 
     if(contador3==20){
-        if(*userDefinedTemp)
         pthread_mutex_unlock(&lock4);  
         contador3=0;  
     }
@@ -83,26 +83,31 @@ void trataSinalAlarme(int sinal)
 
 
 void * regulateTemperature(){
+    //int min=1,max=0;
     while(keepThreading){
         pthread_mutex_lock(&lock6);
 
-        if(tempHumidity[0]+2<=*userDefinedTemp){
+        //printf("temp = %lf\n %f",userDefinedTemp,tempHumidity[0]);
+        if(userDefinedTemp - 2 < tempHumidity[0]){
             if(update->machines[4].state==0){
                 gpioLigaEquipamentos(4);
             }
             if(update->machines[5].state==0){
                 gpioLigaEquipamentos(5);
             }
-     
+
         }
-        else{
-             if(update->machines[4].state==1){
+
+        else if(userDefinedTemp + 2 > tempHumidity[0]){
+            if(update->machines[4].state==1){
                 gpioLigaEquipamentos(4);
             }
             if(update->machines[5].state==1){
                 gpioLigaEquipamentos(5);
             }
         }
+
+
     }
     return NULL;
 
@@ -119,6 +124,7 @@ void interruption(int sig)
     pthread_cancel(t2);
     pthread_cancel(t3);
     pthread_cancel(t4);
+    pthread_cancel(t5);
     pthread_mutex_unlock(&lock1),
     pthread_mutex_unlock(&lock2);
     pthread_mutex_unlock(&lock3);
@@ -161,7 +167,7 @@ void * connectClient(){
         if(restartClient){
             restartClient = init_Cliente();
         }
-
+       
         
     }
     return NULL;
@@ -208,26 +214,6 @@ void *sendUpdate(){
         if(!restartClient){
 
             update = updated_Values();
-            /*
-            for (int i = 0; i < 6; i++)
-            {
-                if(update->machines[i].state){
-                    printf("Machine Port = %d Machine State = %d\n", update->machines[i].port, update->machines[i].state);  
-                }
-            
-            }
-            
-
-            for (int i = 0; i < 8; i++)
-            {
-                if(update->sensors[i].state){
-                    printf("Sensor Port = %d Sensor State = %d\n", update->sensors[i].port, update->sensors[i].state);  
-                }
-            }
-            
-
-            printf("Umidade2 = %f Temperatura2 = %f\n", update->umidade,update->temperatura);
-            */
             update->temperatura = tempHumidity[0];
             update->umidade = tempHumidity[1];
             restartClient = send_TCP_message(update);
